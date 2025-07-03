@@ -1,19 +1,17 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 import joblib
 
-# Charger le modèle entraîné
+
 model = joblib.load("model/modele.pkl")
 
-# Créer l'application FastAPI
 app = FastAPI()
+@app.get("/")
+def accueil():
+    return {"message": "Bienvenue sur l'API IA de prédiction. Utilisez /predict pour envoyer une valeur."}
 
-# Schéma des données attendues
-class InputData(BaseModel):
-    value: float
 
-# Endpoint pour la prédiction
 @app.post("/predict")
-def predict(data: InputData):
-    prediction = model.predict([[data.value]])
-    return {"prediction": int(prediction[0])}
+def predict(valeur: dict):
+    prediction = model.predict([[valeur["valeur"]]])
+    return {"prediction": prediction[0]}
+
